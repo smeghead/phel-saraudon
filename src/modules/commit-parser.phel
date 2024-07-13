@@ -1,0 +1,19 @@
+(ns saraudon\modules\commit-parser
+  (:require phel\str :as s)
+  (:require saraudon\modules\types))
+
+(defn- get-hash [lines]
+  (let [commit-line (find |(= (php/preg_match "/^commit /" $) 1) lines)]
+    (php/preg_replace  "/^commit (\S*).*$/" "$1" commit-line)))
+
+(defn- get-files [lines target-path]
+  (let [files (filter |(= (php/preg_match "/^ \S+\s*\| \s*[0-9,]+/" $) 1) lines)]
+    (filter |(str-contains? $ target-path)
+            (map |(types/file
+                    (php/preg_replace "/^ (\S*)\s*\|.*/" "$1" $)
+                    (php/preg_replace "/.*\| \s*([0-9,]+).*/" "$1" $))
+                 files))))
+
+(defn parse-commit [string target-path]
+  (let [lines (s/split-lines string)]
+    (types/commit (get-hash lines) (get-files lines target-path))))

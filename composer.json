@@ -1,0 +1,36 @@
+{
+  "name": "smeghead/phel-saraudon",
+  "description": "A command to Visualize result of `git log --stat`.",
+  "keywords": [
+    "phel",
+    "lisp",
+    "functional",
+    "language",
+    "git"
+  ],
+  "homepage": "https://github.com/smeghead/phel-saraudon",
+  "license": "MIT",
+  "type": "project",
+  "require": {
+    "php": ">=8.2",
+    "phel-lang/phel-lang": "^0.15"
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^6.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "PhelGenerated\\": "src/PhelGenerated"
+    }
+  },
+  "scripts": {
+    "dev": "vendor/bin/phel run src/main.phel",
+    "build": "vendor/bin/phel build --no-cache",
+    "format": "vendor/bin/phel format",
+    "test": "vendor/bin/phel test",
+    "repl": [
+      "Composer\\Config::disableProcessTimeout",
+      "vendor/bin/phel repl"
+    ]
+  }
+}

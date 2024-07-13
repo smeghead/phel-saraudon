@@ -1,0 +1,28 @@
+(ns saraudon\modules\commit-parser-test
+  (:require saraudon\modules\commit-parser :as parser)
+  (:require phel\test :refer [deftest is]))
+
+(deftest test-parser
+  (let [commit-string "commit 149a69604dedcd4f33be7ba5d5babee62aa9b111 (origin/add-hide-private-option, add-hide-private-option)
+Author: smeghead <smeghead7@gmail.com>
+Date:   Sat Jul 6 22:38:50 2024 +0900
+
+    feat: add `--hide-private` option. #67
+    
+    add `--hide-private`, `--hide-private-properties`, `--hide-private-methods` options.
+
+ CHANGELOG.md                                   |   4 ++
+ README.md                                      |   3 ++
+ bin/php-class-diagram                          |   6 +++
+ src/Config/Options.php                         |  22 +++++++++++
+ src/DiagramElement/Entry.php                   |   9 ++++-
+ test/HidePrivateTest.php                       | 145 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ test/OptionsTest.php                           |  63 +++++++++++++++++++++++++++++-
+ test/fixtures/hide-private/product/Product.php |  13 +++++++
+ 8 files changed, 263 insertions(+), 2 deletions(-)
+"
+       result (parser/parse-commit commit-string "src")]
+    (is (= "149a69604dedcd4f33be7ba5d5babee62aa9b111" (result :hash)))
+    (is (= "src/Config/Options.php" (get-in result [:files 0 :path])))
+    (is (= "src/DiagramElement/Entry.php" (get-in result [:files 1 :path])))
+    ))

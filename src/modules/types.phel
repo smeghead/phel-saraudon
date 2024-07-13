@@ -1,0 +1,5 @@
+(ns saraudon\modules\types)
+
+(defstruct file [path modify-lines])
+
+(defstruct commit [hash files])
