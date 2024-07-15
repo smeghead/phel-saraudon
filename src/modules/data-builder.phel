@@ -1,0 +1,38 @@
+(ns saraudon\modules\data-builder
+  (:require phel\str :as s)
+  (:require saraudon\modules\types))
+
+(defstruct node [id group])
+
+(defstruct link [source target value])
+
+(defstruct data [nodes links])
+
+(defn- unique [elements aditionals]
+  (loop [elements elements
+         aditionals aditionals]
+    (if (empty? aditionals)
+      elements
+      (let [element (first aditionals)
+            new? (empty? (find |(if (empty? $)
+                                  false
+                                  (= ($ :id) (element :id))) elements))]
+            # avoid find problem. #737
+            #new? (empty? (find |(= ($ :id) (element :id)) elements))]
+        (recur (if new?
+                 (push elements element)
+                 elements)
+               (rest aditionals))))))
+
+(defn- get-nodes [commits]
+  (loop [commits commits
+         acc []]
+    (if (empty? commits)
+      acc
+      (recur (rest commits) (unique acc (map |(node ($ :path) 1) ((first commits) :files)))))))
+
+(defn- get-links [commits]
+  )
+
+(defn build [commits]
+  (data (get-nodes commits) (get-links commits)))

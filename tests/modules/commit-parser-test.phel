@@ -24,5 +24,7 @@ Date:   Sat Jul 6 22:38:50 2024 +0900
        result (parser/parse-commit commit-string "src")]
     (is (= "149a69604dedcd4f33be7ba5d5babee62aa9b111" (result :hash)))
     (is (= "src/Config/Options.php" (get-in result [:files 0 :path])))
+    (is (= 22 (get-in result [:files 0 :modify-lines])))
     (is (= "src/DiagramElement/Entry.php" (get-in result [:files 1 :path])))
+    (is (= 9 (get-in result [:files 1 :modify-lines])))
     ))

@@ -11,7 +11,7 @@
     (filter |(str-contains? $ target-path)
             (map |(types/file
                     (php/preg_replace "/^ (\S*)\s*\|.*/" "$1" $)
-                    (php/preg_replace "/.*\| \s*([0-9,]+).*/" "$1" $))
+                    (php/intval (php/preg_replace "/.*\| \s*([0-9,]+).*/" "$1" $)))
                  files))))
 
 (defn parse-commit [string target-path]

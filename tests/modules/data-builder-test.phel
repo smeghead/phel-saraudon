@@ -1,0 +1,17 @@
+(ns saraudon\modules\data-builder-test
+  (:require saraudon\modules\types :as t)
+  (:require saraudon\modules\data-builder :as builder)
+  (:require phel\test :refer [deftest is]))
+
+(deftest test-data-builder
+  (let [commits [(t/commit "149a69604dedcd4f33be7ba5d5babee62aa9b111"
+                           [(t/file "src/Config/Options.php" 22)
+                            (t/file "src/DiagramElement/Entry.php" 9)])
+                 (t/commit "149a69604dedcd4f33be7ba5d5babee62aa9b112"
+                           [(t/file "src/Config/Options.php" 2)
+                            (t/file "src/DiagramElement/Other.php" 11)])]
+        result (builder/build commits)]
+    (is (= "src/Config/Options.php" (get-in result [:nodes 0 :id])))
+    (is (= "src/DiagramElement/Entry.php" (get-in result [:nodes 1 :id])))
+    (is (= "src/DiagramElement/Other.php" (get-in result [:nodes 2 :id])))
+    ))
