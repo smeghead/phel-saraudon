@@ -14,4 +14,8 @@
     (is (= "src/Config/Options.php" (get-in result [:nodes 0 :id])))
     (is (= "src/DiagramElement/Entry.php" (get-in result [:nodes 1 :id])))
     (is (= "src/DiagramElement/Other.php" (get-in result [:nodes 2 :id])))
+    (is (= "src/Config/Options.php" (get-in result [:links 0 :source])))
+    (is (= "src/DiagramElement/Entry.php" (get-in result [:links 0 :target])))
+    (is (= "src/Config/Options.php" (get-in result [:links 1 :source])))
+    (is (= "src/DiagramElement/Other.php" (get-in result [:links 1 :target])))
     ))

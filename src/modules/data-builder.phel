@@ -8,7 +8,7 @@
 
 (defstruct data [nodes links])
 
-(defn- unique [elements aditionals]
+(defn- unique-node [elements aditionals]
   (loop [elements elements
          aditionals aditionals]
     (if (empty? aditionals)
@@ -29,10 +29,39 @@
          acc []]
     (if (empty? commits)
       acc
-      (recur (rest commits) (unique acc (map |(node ($ :path) 1) ((first commits) :files)))))))
+      (recur (rest commits) (unique-node acc (map |(node ($ :path) 1) ((first commits) :files)))))))
+
+(defn- unique-link [elements aditionals]
+  (loop [elements elements
+         aditionals aditionals]
+    (if (empty? aditionals)
+      elements
+      (let [element (first aditionals)
+            new? (empty? (find |(if (empty? $)
+                                  false
+                                  (or (and (= ($ :source) (element :source))
+                                           (= ($ :target) (element :target)))
+                                      (and (= ($ :source) (element :target))
+                                           (= ($ :target) (element :source)))))
+                               elements))]
+            # avoid find problem. #737
+            #new? (empty? (find |(= ($ :id) (element :id)) elements))]
+        (recur (if new?
+                 (push elements element)
+                 elements)
+               (rest aditionals))))))
 
 (defn- get-links [commits]
-  )
+  (loop [commits commits
+         acc []]
+    (if (empty? commits)
+      acc
+      (let [new-links (filter truthy? (for [source :in ((first commits) :files)
+                                            target :in ((first commits) :files)]
+                                        (if (= (source :path) (target :path))
+                                          nil
+                                          (link (source :path) (target :path) 1))))]
+        (recur (rest commits) (unique-link acc new-links))))))
 
 (defn build [commits]
   (data (get-nodes commits) (get-links commits)))
