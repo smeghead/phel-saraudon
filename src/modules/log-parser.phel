@@ -1,0 +1,18 @@
+(ns saraudon\modules\log-parser
+  (:require phel\str :as s)
+  (:require saraudon\modules\types))
+
+(defn parse [command-output]
+  (loop [lines (s/split-lines command-output)
+         commit-lines []
+         commits []]
+    (if (empty? lines)
+      (push commits (s/join "\r\n" commit-lines))
+      (let [line (first lines)]
+        (if (= (php/mb_strlen line) 0)
+          (recur (rest lines) commit-lines commits)
+          (if (= (php/preg_match "/^commit /" line) 1)
+            (recur (rest lines) [line] (if (empty? commit-lines)
+                                         commits
+                                         (push commits (s/join "\r\n" commit-lines))))
+            (recur (rest lines) (push commit-lines line) commits)))))))

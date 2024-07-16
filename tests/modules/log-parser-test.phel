@@ -1,0 +1,34 @@
+(ns saraudon\modules\log-parser-test
+  (:require saraudon\modules\log-parser :as parser)
+  (:require phel\test :refer [deftest is]))
+
+(deftest test-log-parser
+  (let [command-string "commit 149a69604dedcd4f33be7ba5d5babee62aa9b111 (origin/add-hide-private-option, add-hide-private-option)
+Author: smeghead <smeghead7@gmail.com>
+Date:   Sat Jul 6 22:38:50 2024 +0900
+
+    feat: add `--hide-private` option. #67
+    
+    add `--hide-private`, `--hide-private-properties`, `--hide-private-methods` options.
+
+ bin/php-class-diagram                          |   6 +++
+ src/Config/Options.php                         |  22 +++++++++++
+ src/DiagramElement/Entry.php                   |   9 ++++-
+ 8 files changed, 263 insertions(+), 2 deletions(-)
+
+commit 1c06ca8bc82c5f63e9130d4b2ad94d9acb6cbf0d
+Author: smeghead <smeghead7@gmail.com>
+Date:   Mon Jul 15 22:40:16 2024 +0900
+
+    add links test.
+
+ src/modules/data-builder.phel        | 35 ++++++++++++++++++++++++++++++++---
+ tests/modules/data-builder-test.phel |  4 ++++
+ 2 files changed, 36 insertions(+), 3 deletions(-)
+
+"
+       result (parser/parse command-string)]
+    (is (= 2 (count result)))
+    (is (= 1 (php/preg_match "/^commit 149a69604dedcd4f33be7ba5d5babee62aa9b111/" (result 0))))
+    (is (= 1 (php/preg_match "/^commit 1c06ca8bc82c5f63e9130d4b2ad94d9acb6cbf0d/" (result 1))))
+    ))
