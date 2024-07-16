@@ -2,7 +2,9 @@
   (:require phel\str :as s)
   (:require saraudon\modules\types))
 
-(defstruct node [id group])
+(defstruct temporary-node [path modify-lines])
+
+(defstruct node [id path label modify-lines])
 
 (defstruct link [source target value])
 
@@ -16,9 +18,9 @@
       (let [element (first aditionals)
             new? (empty? (find |(if (empty? $)
                                   false
-                                  (= ($ :id) (element :id))) elements))]
+                                  (= ($ :path) (element :path))) elements))]
             # avoid find problem. #737
-            #new? (empty? (find |(= ($ :id) (element :id)) elements))]
+            #new? (empty? (find |(= ($ :path) (element :path)) elements))]
         (recur (if new?
                  (push elements element)
                  elements)
@@ -28,8 +30,16 @@
   (loop [commits commits
          acc []]
     (if (empty? commits)
-      acc
-      (recur (rest commits) (unique-node acc (map |(node ($ :path) 1) ((first commits) :files)))))))
+      (loop [t-nodes acc
+             id 0
+             acc2 []]
+        (if (empty? t-nodes)
+          acc2
+          (let [t-node (first t-nodes)
+                path (t-node :path)
+                label (s/replace path "/^.*\/([^\/]*)$/" "$1")]
+            (recur (rest t-nodes) (inc id) (push acc2 (node id path label 0))))))
+      (recur (rest commits) (unique-node acc (map |(temporary-node ($ :path) ($ :modify-lines)) ((first commits) :files)))))))
 
 (defn- unique-link [elements aditionals]
   (loop [elements elements
@@ -51,7 +61,14 @@
                  elements)
                (rest aditionals))))))
 
-(defn- get-links [commits]
+(defn- get-node-index [nodes file]
+  (loop [nodes nodes]
+    (let [node (first nodes)]
+      (if (= (node :path) (file :path))
+        (node :id)
+        (recur (rest nodes))))))
+
+(defn- get-links [commits nodes]
   (loop [commits commits
          acc []]
     (if (empty? commits)
@@ -60,8 +77,10 @@
                                             target :in ((first commits) :files)]
                                         (if (= (source :path) (target :path))
                                           nil
-                                          (link (source :path) (target :path) 1))))]
+                                          (link (get-node-index nodes source) (get-node-index nodes target) 1))))]
         (recur (rest commits) (unique-link acc new-links))))))
 
 (defn build [commits]
-  (data (get-nodes commits) (get-links commits)))
+  (let [nodes (get-nodes commits)
+        links (get-links commits nodes)]
+    (data nodes links)))

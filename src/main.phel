@@ -1,5 +1,8 @@
 (ns saraudon\main
-  (:require saraudon\modules\adder-module :refer [adder]))
+  (:require saraudon\modules\commit-parser)
+  (:require saraudon\modules\data-builder))
 
 (when-not *build-mode*
-  (println (adder 1 2 3)))
+  (println (php/file_get_contents (format "%s/template.html" __DIR__)))
+  #(println (php/file_get_contents (format "%s/template.html" __DIR__)))
+)
