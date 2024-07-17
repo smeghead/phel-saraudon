@@ -26,20 +26,59 @@
                  elements)
                (rest aditionals))))))
 
-(defn- get-nodes [commits]
+(defn- get-temprary-nodes [commits]
   (loop [commits commits
          acc []]
     (if (empty? commits)
-      (loop [t-nodes acc
-             id 0
-             acc2 []]
-        (if (empty? t-nodes)
-          acc2
-          (let [t-node (first t-nodes)
-                path (t-node :path)
-                label (s/replace path "/^.*\/([^\/]*)$/" "$1")]
-            (recur (rest t-nodes) (inc id) (push acc2 (node id path label 0))))))
-      (recur (rest commits) (unique-node acc (map |(temporary-node ($ :path) ($ :modify-lines)) ((first commits) :files)))))))
+       acc
+#      (loop [t-nodes acc
+#             id 0
+#             acc2 []]
+#        (if (empty? t-nodes)
+#          acc2
+#          (let [t-node (first t-nodes)
+#                path (t-node :path)
+#                label (s/replace path "/^.*\/([^\/]*)$/" "$1")]
+#            (recur (rest t-nodes) (inc id) (push acc2 (node id path label 0))))))
+      (recur (rest commits) (concat acc (map |(temporary-node ($ :path) ($ :modify-lines)) ((first commits) :files)))))))
+
+(defn- search-temporary-nodes [t-nodes node]
+  (loop [t-nodes t-nodes
+         acc []]
+    (if (empty? t-nodes)
+      acc
+      (let [t-node (first t-nodes)]
+        (recur (rest t-nodes) (if (= (t-node :path) (node :path))
+                                (push acc t-node)
+                                acc))))))
+
+(defn- get-unique-temporary-nodes [t-nodes]
+  (loop [nodes t-nodes
+         acc []]
+    (if (empty? nodes)
+      acc
+      (let [node (first nodes)
+            exists? (find |(if (empty? $)
+                             false
+                             (= ($ :path) (node :path))) acc)]
+        (recur (rest nodes) (if exists?
+                              acc
+                              (push acc node)))))))
+
+(defn- get-nodes [commits]
+  (let [t-nodes (get-temprary-nodes commits)
+        unique-temporary-nodes (get-unique-temporary-nodes t-nodes)]
+    (loop [nodes unique-temporary-nodes
+           id 0
+           acc []]
+      (if (empty? nodes)
+        acc
+        (let [t-node (first nodes)
+              same-nodes (search-temporary-nodes t-nodes t-node)
+              path (t-node :path)
+              label (s/replace path "/^.*\/([^\/]*)$/" "$1")
+              amount-modify-lines (sum (map |($ :modify-lines) same-nodes))]
+          (recur (rest nodes) (inc id) (push acc (node id path label amount-modify-lines))))))))
 
 (defn- unique-link [elements aditionals]
   (loop [elements elements

@@ -15,12 +15,15 @@
     (is (= 0 (get-in result [:nodes 0 :id])))
     (is (= "src/Config/Options.php" (get-in result [:nodes 0 :path])))
     (is (= "Options.php" (get-in result [:nodes 0 :label])))
+    (is (= 24 (get-in result [:nodes 0 :modify-lines])))
     (is (= 1 (get-in result [:nodes 1 :id])))
     (is (= "src/DiagramElement/Entry.php" (get-in result [:nodes 1 :path])))
     (is (= "Entry.php" (get-in result [:nodes 1 :label])))
+    (is (= 9 (get-in result [:nodes 1 :modify-lines])))
     (is (= 2 (get-in result [:nodes 2 :id])))
     (is (= "src/DiagramElement/Other.php" (get-in result [:nodes 2 :path])))
     (is (= "Other.php" (get-in result [:nodes 2 :label])))
+    (is (= 11 (get-in result [:nodes 2 :modify-lines])))
     (is (= 0 (get-in result [:links 0 :source])))
     (is (= 1 (get-in result [:links 0 :target])))
     (is (= 0 (get-in result [:links 1 :source])))
@@ -35,7 +38,7 @@
                            [(t/file "src/Config/Options.php" 2)
                             (t/file "src/DiagramElement/Other.php" 11)])]
         result (builder/build commits)
-        nodes-expected "[{\"id\":0,\"path\":\"src\/Config\/Options.php\",\"label\":\"Options.php\",\"modify-lines\":0},{\"id\":1,\"path\":\"src\/DiagramElement\/Entry.php\",\"label\":\"Entry.php\",\"modify-lines\":0},{\"id\":2,\"path\":\"src\/DiagramElement\/Other.php\",\"label\":\"Other.php\",\"modify-lines\":0}]"
+        nodes-expected "[{\"id\":0,\"path\":\"src\/Config\/Options.php\",\"label\":\"Options.php\",\"modify-lines\":24},{\"id\":1,\"path\":\"src\/DiagramElement\/Entry.php\",\"label\":\"Entry.php\",\"modify-lines\":9},{\"id\":2,\"path\":\"src\/DiagramElement\/Other.php\",\"label\":\"Other.php\",\"modify-lines\":11}]"
         links-expected "[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1}]"]
     (is (= nodes-expected (json/encode (result :nodes))))
     (is (= links-expected (json/encode (result :links))))
