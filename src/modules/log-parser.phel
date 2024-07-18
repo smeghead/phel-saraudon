@@ -3,7 +3,7 @@
   (:require saraudon\modules\types))
 
 (defn parse [command-output]
-  (loop [lines (s/split-lines command-output)
+  (loop [lines (values (php/preg_split "/\r?\n/" command-output -1)) #(s/split-lines command-output) https://github.com/phel-lang/phel-lang/pull/736
          commit-lines []
          commits []]
     (if (empty? lines)

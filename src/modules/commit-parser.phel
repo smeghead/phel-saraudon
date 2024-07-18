@@ -8,6 +8,7 @@
 
 (defn- get-files [lines target-path]
   (let [files (filter |(= (php/preg_match "/^ \S+\s*\| \s*[0-9,]+/" $) 1) lines)]
+
     (filter |(str-contains? $ target-path)
             (map |(types/file
                     (php/preg_replace "/^ (\S*)\s*\|.*/" "$1" $)
@@ -15,5 +16,5 @@
                  files))))
 
 (defn parse-commit [string target-path]
-  (let [lines (s/split-lines string)]
+  (let [lines (values (php/preg_split "/\r?\n/" string -1))] #(s/split-lines string)] https://github.com/phel-lang/phel-lang/pull/736
     (types/commit (get-hash lines) (get-files lines target-path))))

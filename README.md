@@ -3,6 +3,10 @@
 A command to Visualize result of `git log --stat`
 
 
+```bash
+$ git log --stat -n 20 | vendor/bin/phel run src/main.phel > output.html
+```
+
 ## Development
 
 ### docker

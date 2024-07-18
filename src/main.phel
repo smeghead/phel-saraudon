@@ -1,8 +1,27 @@
 (ns saraudon\main
+  (:require phel\json)
+  (:require saraudon\modules\log-parser)
   (:require saraudon\modules\commit-parser)
   (:require saraudon\modules\data-builder))
 
 (when-not *build-mode*
-  (println (php/file_get_contents (format "%s/template.html" __DIR__)))
+  (let [stdin (php/file_get_contents "php://stdin")
+        logs (log-parser/parse stdin)
+        commits (map |(commit-parser/parse-commit $ "src") logs)
+        data (data-builder/build commits)
+        nodes (data :nodes)
+        links (data :links)
+        template (php/file_get_contents (format "%s/template.html" __DIR__))
+        template-lines (values (php/preg_split "/\r?\n/" template -1))
+        ]
+    (for [line :in template-lines]
+      (if (str-contains? line "<!--DATA_SECTION-->")
+        (println (format
+                   "const nodes = %s;\nconst links = %s;\n"
+                   (json/encode nodes)
+                   (json/encode links)))
+        (println line)))))
+
+#  (println )
   #(println (php/file_get_contents (format "%s/template.html" __DIR__)))
-)
+#)
