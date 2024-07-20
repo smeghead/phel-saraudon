@@ -11,6 +11,11 @@
 <script type="text/javascript">
     const width = 800;
     const height = 800;
+    const colors = [
+      'lightblue', 'lightcoral', 'lightcyan', 'lightgoldenrodyellow', 'lightgray',
+      'lightgreen', 'lightpink', 'lightsalmon', 'lightseagreen', 'lightskyblue',
+      'lightslategray', 'lightsteelblue', 'lightyellow', 'limegreen',
+    ];
 
     <!--DATA_SECTION-->
 
@@ -48,10 +53,10 @@
         .append("circle")
         .attr({
             // 半径
-            r: function(n) {return n['modify-lines'] * 0.3 + 30;}
+            r: n => n['modify-lines'] * 0.3 + 30,
         })
         .style({
-            fill: "orange"
+            fill: n => colors[n.id % colors.length],
         })
         .call(force.drag);
 
@@ -62,27 +67,28 @@
         .append('text')
         .attr({
             "text-anchor":"middle",
-            "fill":"white",
-            "font-size": "12px"
+            "fill":"#333",
+            "font-weight": "bold",
+            "font-size": "15px",
         })
-        .text(function(data) { return data.label; });
+        .text(data => data.label);
 
     // tickイベント(力学計算が起こるたびに呼ばれるらしいので、座標追従などはここで)
     force.on("tick", function() {
         link.attr({
-            x1: function(data) { return data.source.x;},
-            y1: function(data) { return data.source.y;},
-            x2: function(data) { return data.target.x;},
-            y2: function(data) { return data.target.y;}
+            x1: data => data.source.x,
+            y1: data => data.source.y,
+            x2: data => data.target.x,
+            y2: data => data.target.y,
         });
         node.attr({
-            cx: function(data) { return data.x;},
-            cy: function(data) { return data.y;}
+            cx: data => data.x,
+            cy: data => data.y,
         });
         // labelも追随するように
         label.attr({
-            x: function(data) { return data.x;},
-            y: function(data) { return data.y;}
+            x: data => data.x,
+            y: data => data.y,
         });
     });
 
