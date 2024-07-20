@@ -33,15 +33,6 @@
          acc []]
     (if (empty? commits)
        acc
-#      (loop [t-nodes acc
-#             id 0
-#             acc2 []]
-#        (if (empty? t-nodes)
-#          acc2
-#          (let [t-node (first t-nodes)
-#                path (t-node :path)
-#                label (s/replace path "/^.*\/([^\/]*)$/" "$1")]
-#            (recur (rest t-nodes) (inc id) (push acc2 (node id path label 0))))))
       (recur (rest commits) (concat acc (map |(temporary-node ($ :path) ($ :modify-lines)) ((first commits) :files)))))))
 
 (defn- search-temporary-nodes [t-nodes node]
@@ -81,26 +72,6 @@
               label (s/replace path "/^.*\/([^\/]*)$/" "$1")
               amount-modify-lines (sum (map |($ :modify-lines) same-nodes))]
           (recur (rest nodes) (inc id) (push acc (node id path label amount-modify-lines))))))))
-
-#(defn- unique-link [elements aditionals]
-#  (loop [elements elements
-#         aditionals aditionals]
-#    (if (empty? aditionals)
-#      elements
-#      (let [element (first aditionals)
-#            new? (empty? (find |(if (empty? $)
-#                                  false
-#                                  (or (and (= ($ :source) (element :source))
-#                                           (= ($ :target) (element :target)))
-#                                      (and (= ($ :source) (element :target))
-#                                           (= ($ :target) (element :source)))))
-#                               elements))]
-#            # avoid find problem. #737
-#            #new? (empty? (find |(= ($ :id) (element :id)) elements))]
-#        (recur (if new?
-#                 (push elements element)
-#                 elements)
-#               (rest aditionals))))))
 
 (defn- get-node-index [nodes file]
   (loop [nodes nodes]

@@ -6,14 +6,20 @@
 
 (when-not *build-mode*
   (let [stdin (php/file_get_contents "php://stdin")
+        args (loop [args (values argv)]
+               (if (empty? args)
+                 nil
+                 (if (= (first args) "--")
+                   (rest args)
+                   (recur (rest args)))))
+        target (first args)
         logs (log-parser/parse stdin)
-        commits (map |(commit-parser/parse-commit $ "src") logs)
+        commits (map |(commit-parser/parse-commit $ (or target "")) logs)
         data (data-builder/build commits)
         nodes (data :nodes)
         links (data :links)
         template (php/file_get_contents (format "%s/template.html" __DIR__))
-        template-lines (values (php/preg_split "/\r?\n/" template -1))
-        ]
+        template-lines (values (php/preg_split "/\r?\n/" template -1))]
     (for [line :in template-lines]
       (if (str-contains? line "<!--DATA_SECTION-->")
         (println (format
@@ -22,6 +28,3 @@
                    (json/encode links)))
         (println line)))))
 
-#  (println )
-  #(println (php/file_get_contents (format "%s/template.html" __DIR__)))
-#)

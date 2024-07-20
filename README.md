@@ -3,8 +3,18 @@
 A command to Visualize result of `git log --stat`
 
 
+## Install
+
+(not yet supported)
+
 ```bash
-$ git log --stat -n 20 | vendor/bin/phel run src/main.phel > output.html
+$ composer install smeghead/phel-saraudon
+```
+
+## Execute
+
+```bash
+$ git log --stat -n 20 | vendor/bin/phel run src/main.phel -- src > output.html
 ```
 
 ## Development
