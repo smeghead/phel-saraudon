@@ -6,7 +6,9 @@
 
 (defstruct node [id path label modify-lines])
 
-(defstruct link [source target value])
+(defstruct temporary-link [source target])
+
+(defstruct link [source target count])
 
 (defstruct data [nodes links])
 
@@ -80,25 +82,25 @@
               amount-modify-lines (sum (map |($ :modify-lines) same-nodes))]
           (recur (rest nodes) (inc id) (push acc (node id path label amount-modify-lines))))))))
 
-(defn- unique-link [elements aditionals]
-  (loop [elements elements
-         aditionals aditionals]
-    (if (empty? aditionals)
-      elements
-      (let [element (first aditionals)
-            new? (empty? (find |(if (empty? $)
-                                  false
-                                  (or (and (= ($ :source) (element :source))
-                                           (= ($ :target) (element :target)))
-                                      (and (= ($ :source) (element :target))
-                                           (= ($ :target) (element :source)))))
-                               elements))]
-            # avoid find problem. #737
-            #new? (empty? (find |(= ($ :id) (element :id)) elements))]
-        (recur (if new?
-                 (push elements element)
-                 elements)
-               (rest aditionals))))))
+#(defn- unique-link [elements aditionals]
+#  (loop [elements elements
+#         aditionals aditionals]
+#    (if (empty? aditionals)
+#      elements
+#      (let [element (first aditionals)
+#            new? (empty? (find |(if (empty? $)
+#                                  false
+#                                  (or (and (= ($ :source) (element :source))
+#                                           (= ($ :target) (element :target)))
+#                                      (and (= ($ :source) (element :target))
+#                                           (= ($ :target) (element :source)))))
+#                               elements))]
+#            # avoid find problem. #737
+#            #new? (empty? (find |(= ($ :id) (element :id)) elements))]
+#        (recur (if new?
+#                 (push elements element)
+#                 elements)
+#               (rest aditionals))))))
 
 (defn- get-node-index [nodes file]
   (loop [nodes nodes]
@@ -107,17 +109,36 @@
         (node :id)
         (recur (rest nodes))))))
 
-(defn- get-links [commits nodes]
-  (loop [commits commits
+(defn- same-link [a b]
+  (or (and (= (a :source) (b :source))
+           (= (a :target) (b :target)))
+      (and (= (a :source) (b :target))
+           (= (a :target) (b :source)))))
+
+(defn- generate-links [links]
+  (loop [links links
          acc []]
-    (if (empty? commits)
+    (if (empty? links)
       acc
-      (let [new-links (filter truthy? (for [source :in ((first commits) :files)
-                                            target :in ((first commits) :files)]
-                                        (if (= (source :path) (target :path))
-                                          nil
-                                          (link (get-node-index nodes source) (get-node-index nodes target) 1))))]
-        (recur (rest commits) (unique-link acc new-links))))))
+      (let [t-link (first links)
+            exists? (not= (count (filter |(same-link $ t-link) acc)) 0)]
+        (if exists?
+          (recur (rest links) acc)
+          (let [count (count (filter |(same-link $ t-link) links))]
+            (recur (rest links) (push acc (link (t-link :source) (t-link :target) count)))))))))
+
+(defn- get-links [commits nodes]
+  (let [links (loop [commits commits
+                     acc []]
+                (if (empty? commits)
+                  acc
+                  (let [new-links (filter truthy? (for [source :in ((first commits) :files)
+                                                        target :in ((first commits) :files)]
+                                                    (if (= (source :path) (target :path))
+                                                      nil
+                                                      (temporary-link (get-node-index nodes source) (get-node-index nodes target)))))]
+                    (recur (rest commits) (concat acc new-links)))))]
+    (generate-links links)))
 
 (defn build [commits]
   (let [nodes (get-nodes commits)

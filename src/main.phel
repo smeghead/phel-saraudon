@@ -17,7 +17,7 @@
     (for [line :in template-lines]
       (if (str-contains? line "<!--DATA_SECTION-->")
         (println (format
-                   "const nodes = %s;\nconst links = %s;\n"
+                   "    const nodes = %s;\n    const links = %s;\n"
                    (json/encode nodes)
                    (json/encode links)))
         (println line)))))

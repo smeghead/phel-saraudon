@@ -19,10 +19,10 @@
         .nodes(nodes)
         .links(links)
         .size([width, height])
-        .distance(190) // node同士の距離
+        .distance(300) // node同士の距離
         .friction(0.9) // 摩擦力(加速度)的なものらしい。
-        .charge(-200) // 寄っていこうとする力。推進力(反発力)というらしい。
-        .gravity(0.08) // 画面の中央に引っ張る力。引力。
+        .charge(-400) // 寄っていこうとする力。推進力(反発力)というらしい。
+        .gravity(0.09) // 画面の中央に引っ張る力。引力。
         .start();
 
     // svg領域の作成
@@ -35,9 +35,11 @@
         .data(links)
         .enter()
         .append("line")
-        .style({stroke: "#ccc",
-        "stroke-width": 1
-    });
+        .attr({
+            //"stroke-width": function(l) {return l.value * 10; },
+            'stroke-width': l => l.count / 2,
+        })
+        .style({stroke: "#999"});
 
     // nodesの描画(今回はsvgの円描画機能を利用)
     const node = svg.selectAll("circle")
@@ -45,7 +47,7 @@
         .enter()
         .append("circle")
         .attr({
-            // せっかくなので半径をランダムに
+            // 半径
             r: function(n) {return n['modify-lines'] * 0.3 + 30;}
         })
         .style({
