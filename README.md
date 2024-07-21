@@ -23,6 +23,12 @@ Run the `git log` command for another directory, parse the results and save the 
 $ GIT_WORK_TREE=/usr/target-project GIT_DIR=/usr/target-project/.git git log --stat -n 50 | vendor/bin/phel run src/main.phel -- src > output.html
 ```
 
+## Example
+
+Visualization of the history of the last 50 commits of `php-class-diagram`.
+
+[php-class-diagram](example/output.jpg)
+
 ## Development
 
 ### docker

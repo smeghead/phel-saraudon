@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>saraudon</title>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+<body>
+<style type="text/css">
+
+</style>
+<script type="text/javascript">
+    const width = 800;
+    const height = 800;
+    const colors = [
+      'lightblue', 'lightcoral', 'lightcyan', 'lightgoldenrodyellow', 'lightgray',
+      'lightgreen', 'lightpink', 'lightsalmon', 'lightseagreen', 'lightskyblue',
+      'lightslategray', 'lightsteelblue', 'lightyellow', 'limegreen',
+    ];
+
+    const nodes = [{"id":0,"path":"src\/Main.php","label":"Main.php","modify-lines":148},{"id":1,"path":"src\/Config\/Options.php","label":"Options.php","modify-lines":37},{"id":2,"path":"src\/DiagramElement\/Entry.php","label":"Entry.php","modify-lines":27},{"id":3,"path":"src\/DiagramElement\/Package.php","label":"Package.php","modify-lines":46},{"id":4,"path":"src\/Php\/PhpAccessModifier.php","label":"PhpAccessModifier.php","modify-lines":8},{"id":5,"path":"src\/Php\/PhpClass.php","label":"PhpClass.php","modify-lines":29},{"id":6,"path":"src\/Php\/PhpMethod.php","label":"PhpMethod.php","modify-lines":12},{"id":7,"path":"src\/Php\/PhpProperty.php","label":"PhpProperty.php","modify-lines":12},{"id":8,"path":"src\/Php\/PhpReader.php","label":"PhpReader.php","modify-lines":69},{"id":9,"path":"src\/Php\/PhpTypeExpression.php","label":"PhpTypeExpression.php","modify-lines":10},{"id":10,"path":"src\/DiagramElement\/Relation.php","label":"Relation.php","modify-lines":8},{"id":11,"path":"src\/DiagramElement\/ArrowDependency.php","label":"ArrowDependency.php","modify-lines":18}];
+    const links = [{"source":1,"target":2,"count":4},{"source":0,"target":4,"count":2},{"source":0,"target":5,"count":2},{"source":0,"target":6,"count":2},{"source":0,"target":7,"count":2},{"source":0,"target":8,"count":2},{"source":0,"target":9,"count":2},{"source":4,"target":5,"count":2},{"source":4,"target":6,"count":2},{"source":4,"target":7,"count":2},{"source":4,"target":8,"count":2},{"source":4,"target":9,"count":2},{"source":5,"target":6,"count":2},{"source":5,"target":7,"count":2},{"source":5,"target":8,"count":2},{"source":5,"target":9,"count":2},{"source":6,"target":7,"count":2},{"source":6,"target":8,"count":2},{"source":6,"target":9,"count":2},{"source":7,"target":8,"count":2},{"source":7,"target":9,"count":2},{"source":8,"target":9,"count":2},{"source":3,"target":10,"count":2},{"source":3,"target":8,"count":2},{"source":10,"target":8,"count":2},{"source":1,"target":0,"count":2},{"source":1,"target":10,"count":2},{"source":2,"target":10,"count":2}];
+
+
+    // forceLayout自体の設定はここ。ここをいじると楽しい。
+    const force = d3.layout.force()
+        .nodes(nodes)
+        .links(links)
+        .size([width, height])
+        .distance(300) // node同士の距離
+        .friction(0.9) // 摩擦力(加速度)的なものらしい。
+        .charge(-400) // 寄っていこうとする力。推進力(反発力)というらしい。
+        .gravity(0.09) // 画面の中央に引っ張る力。引力。
+        .start();
+
+    // svg領域の作成
+    const svg = d3.select("body")
+        .append("svg")
+        .attr({width:width, height:height});
+
+    // link線の描画(svgのline描画機能を利用)
+    const link = svg.selectAll("line")
+        .data(links)
+        .enter()
+        .append("line")
+        .attr({
+            //"stroke-width": function(l) {return l.value * 10; },
+            'stroke-width': l => l.count / 2,
+        })
+        .style({stroke: "#999"});
+
+    // nodesの描画(今回はsvgの円描画機能を利用)
+    const node = svg.selectAll("circle")
+        .data(nodes)
+        .enter()
+        .append("circle")
+        .attr({
+            // 半径
+            r: n => n['modify-lines'] * 0.3 + 30,
+        })
+        .style({
+            fill: n => colors[n.id % colors.length],
+        })
+        .call(force.drag);
+
+    // nodeのラベル周りの設定
+    const label = svg.selectAll('text')
+        .data(nodes)
+        .enter()
+        .append('text')
+        .attr({
+            "text-anchor":"middle",
+            "fill":"#333",
+            "font-weight": "bold",
+            "font-size": "15px",
+        })
+        .text(data => data.label);
+
+    // tickイベント(力学計算が起こるたびに呼ばれるらしいので、座標追従などはここで)
+    force.on("tick", function() {
+        link.attr({
+            x1: data => data.source.x,
+            y1: data => data.source.y,
+            x2: data => data.target.x,
+            y2: data => data.target.y,
+        });
+        node.attr({
+            cx: data => data.x,
+            cy: data => data.y,
+        });
+        // labelも追随するように
+        label.attr({
+            x: data => data.x,
+            y: data => data.y,
+        });
+    });
+
+</script>
+
+</body>
+
