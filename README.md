@@ -9,6 +9,7 @@ D3(https://d3js.org/) is used to display the graphs.
 
 The tool uses `phel-lang`. There are no restrictions on target repositories.
 
+This tool is experimental. So, what can be gained from what is visualized by this tool is a subject for future work.
 
 ## Install (composer)
 
