@@ -27,6 +27,8 @@ $ GIT_WORK_TREE=/usr/target-project GIT_DIR=/usr/target-project/.git git log --s
 
 Visualization of the history of the last 50 commits of `php-class-diagram`.
 
+[example-output-page](example/output.html)
+
 ![php-class-diagram](example/output.jpg)
 
 ## Development
