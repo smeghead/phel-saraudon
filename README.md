@@ -2,14 +2,21 @@
 
 A command to Visualize result of `git log --stat`
 
+## Description
 
-## Install
+It takes as input the commit history of the git repository (`git log --stat`) and outputs HTML content to visualize the information.
+D3(https://d3js.org/) is used to display the graphs.
 
-(not yet supported)
+The tool uses `phel-lang`. There are no restrictions on target repositories.
+
+
+## Install (composer)
 
 ```bash
 $ composer require --dev smeghead/phel-saraudon
 ```
+
+https://packagist.org/packages/smeghead/phel-saraudon
 
 ## Execute
 
