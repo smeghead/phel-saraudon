@@ -32,5 +32,8 @@
       "Composer\\Config::disableProcessTimeout",
       "vendor/bin/phel repl"
     ]
-  }
+  },
+  "bin": [
+    "bin/saraudon"
+  ]
 }
