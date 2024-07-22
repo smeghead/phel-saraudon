@@ -37,7 +37,7 @@ Visualization of the history of the last 50 commits of `php-class-diagram`.
 
 [example-output-page](https://smeghead.github.io/phel-saraudon/example/output.html)
 
-![php-class-diagram](example/output.jpg)
+![example](example/output.jpg)
 
 ## Development
 

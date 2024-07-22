@@ -12,12 +12,15 @@
     const width = 800;
     const height = 800;
     const colors = [
-      'lightblue', 'lightcoral', 'lightcyan', 'lightgoldenrodyellow', 'lightgray',
-      'lightgreen', 'lightpink', 'lightsalmon', 'lightseagreen', 'lightskyblue',
-      'lightslategray', 'lightsteelblue', 'lightyellow', 'limegreen',
+        '#30123c', '#4043a7', '#4771e9', '#3d9bfe', '#23c4e2',
+        '#1ce5b6', '#47f784', '#87ff4e', '#b9f635', '#e1dd38',
+        '#f9ba38', '#fe8d27', '#f05b11', '#d73500', '#b01800',
+        //'#7a0100',
     ];
 
     <!--DATA_SECTION-->
+
+    const maxCommitCount = nodes.map(n => n['commit-count']).reduce((a, b) => Math.max(a, b), 0);
 
     // forceLayout自体の設定はここ。ここをいじると楽しい。
     const force = d3.layout.force()
@@ -56,7 +59,7 @@
             r: n => n['modify-lines'] * 0.3 + 30,
         })
         .style({
-            fill: n => colors[n.id % colors.length],
+            fill: n => colors[Math.floor((colors.length - 1) * (n['commit-count'] / maxCommitCount))]
         })
         .call(force.drag);
 
