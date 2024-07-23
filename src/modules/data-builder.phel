@@ -12,22 +12,6 @@
 
 (defstruct data [nodes links])
 
-(defn- unique-node [elements aditionals]
-  (loop [elements elements
-         aditionals aditionals]
-    (if (empty? aditionals)
-      elements
-      (let [element (first aditionals)
-            new? (empty? (find |(if (empty? $)
-                                  false
-                                  (= ($ :path) (element :path))) elements))]
-            # avoid find problem. #737
-            #new? (empty? (find |(= ($ :path) (element :path)) elements))]
-        (recur (if new?
-                 (push elements element)
-                 elements)
-               (rest aditionals))))))
-
 (defn- get-temprary-nodes [commits]
   (loop [commits commits
          acc []]
@@ -74,13 +58,6 @@
               commit-count (count same-nodes)]
           (recur (rest nodes) (inc id) (push acc (node id path label amount-modify-lines commit-count))))))))
 
-(defn- get-node-index [nodes file]
-  (loop [nodes nodes]
-    (let [n (first nodes)]
-      (if (= (n :path) (file :path))
-        (n :id)
-        (recur (rest nodes))))))
-
 (defn- same-link [a b]
   (or (and (= (a :source) (b :source))
            (= (a :target) (b :target)))
@@ -99,20 +76,30 @@
           (let [count (count (filter |(same-link $ t-link) links))]
             (recur (rest links) (push acc (link (t-link :source) (t-link :target) count)))))))))
 
-(defn- get-links [commits nodes]
+(defn- get-links [commits node-map]
   (let [links (loop [commits commits
                      acc []]
                 (if (empty? commits)
                   acc
-                  (let [new-links (filter truthy? (for [source :in ((first commits) :files)
-                                                        target :in ((first commits) :files)]
-                                                    (if (= (source :path) (target :path))
-                                                      nil
-                                                      (temporary-link (get-node-index nodes source) (get-node-index nodes target)))))]
+                  (let [new-links (filter
+                                    truthy?
+                                    (for [source :in ((first commits) :files)
+                                          target :in ((first commits) :files)]
+                                      (if (= (source :path) (target :path))
+                                        nil
+                                        (temporary-link (node-map (source :path)) (node-map (target :path))))))]
                     (recur (rest commits) (concat acc new-links)))))]
     (generate-links links)))
 
+(defn- node-map [nodes]
+  (loop [nodes nodes
+         node-map {}]
+    (if (empty? nodes)
+      node-map
+      (recur (rest nodes) (put node-map ((first nodes) :path) ((first nodes) :id))))))
+
 (defn build [commits]
   (let [nodes (get-nodes commits)
-        links (get-links commits nodes)]
+        node-map (node-map nodes)
+        links (get-links commits node-map)]
     (data nodes links)))
