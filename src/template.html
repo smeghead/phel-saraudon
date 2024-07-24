@@ -22,40 +22,34 @@
 
     const maxCommitCount = nodes.map(n => n['commit-count']).reduce((a, b) => Math.max(a, b), 0);
 
-    // forceLayout自体の設定はここ。ここをいじると楽しい。
     const force = d3.layout.force()
         .nodes(nodes)
         .links(links)
         .size([width, height])
-        .distance(300) // node同士の距離
-        .friction(0.9) // 摩擦力(加速度)的なものらしい。
-        .charge(-400) // 寄っていこうとする力。推進力(反発力)というらしい。
-        .gravity(0.09) // 画面の中央に引っ張る力。引力。
+        .distance(300)
+        .friction(0.9)
+        .charge(-400)
+        .gravity(0.09)
         .start();
 
-    // svg領域の作成
     const svg = d3.select("body")
         .append("svg")
         .attr({width:width, height:height});
 
-    // link線の描画(svgのline描画機能を利用)
     const link = svg.selectAll("line")
         .data(links)
         .enter()
         .append("line")
         .attr({
-            //"stroke-width": function(l) {return l.value * 10; },
             'stroke-width': l => l.count / 2,
         })
         .style({stroke: "#999"});
 
-    // nodesの描画(今回はsvgの円描画機能を利用)
     const node = svg.selectAll("circle")
         .data(nodes)
         .enter()
         .append("circle")
         .attr({
-            // 半径
             r: n => n['modify-lines'] * 0.3 + 30,
         })
         .style({
@@ -63,7 +57,6 @@
         })
         .call(force.drag);
 
-    // nodeのラベル周りの設定
     const label = svg.selectAll('text')
         .data(nodes)
         .enter()
@@ -76,7 +69,6 @@
         })
         .text(data => data.label);
 
-    // tickイベント(力学計算が起こるたびに呼ばれるらしいので、座標追従などはここで)
     force.on("tick", function() {
         link.attr({
             x1: data => data.source.x,
@@ -88,7 +80,6 @@
             cx: data => data.x,
             cy: data => data.y,
         });
-        // labelも追随するように
         label.attr({
             x: data => data.x,
             y: data => data.y,
