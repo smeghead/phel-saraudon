@@ -5,7 +5,22 @@ namespace Smeghead\Saraudon;
 
 use Phel\Phel;
 
-$projectRootDir = __DIR__ . '/../';
+
+$projectRootDir = '';
+foreach (
+    [
+        __DIR__ . '/../../../../composer.json',
+        __DIR__ . '/../composer.json',
+    ] as $file
+) {
+    if (file_exists($file)) {
+        $projectRootDir = dirname($file);
+        break;
+    }
+}
+if (empty($projectRootDir)) {
+  throw new \Exception('cannot find project root directory.');
+}
 
 foreach (
     [
