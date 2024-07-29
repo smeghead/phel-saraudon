@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+namespace Smeghead\Saraudon;
+
+$usage = <<<EOS
+usage: saraudon-git-log <target-project-git-directory>
+
+EOS;
+
+if ($argc < 2) {
+  fputs(STDERR, $usage);
+  die();
+}
+
+$targetDirectory = $argv[1];
+
+if ( ! file_exists($targetDirectory)) {
+  fputs(STDERR, "ERROR: directory not exists. $targetDirectory\n");
+  fputs(STDERR, $usage);
+  die();
+}
+$targetDirectory = realpath($targetDirectory);
+
+printf('env GIT_WORK_TREE=%s GIT_DIR=%s/.git git log --stat', $targetDirectory, $targetDirectory);
