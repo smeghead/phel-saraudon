@@ -31,6 +31,8 @@ Run the `git log` command for another directory, parse the results and save the 
 $ $(vendor/bin/saraudon-git-log /usr/target-project) -n 50 | vendor/bin/saraudon -- src > output.html
 ```
 
+`$(vendor/bin/saraudon-git-log /usr/target-project)`: `saraudon-git-log` generates a `git` command by specifying the target git directory. This can be followed by additional options for `git log`.
+
 ## Example
 
 Visualization of the history of the last 50 commits of `php-class-diagram`.
