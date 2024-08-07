@@ -21,17 +21,25 @@ https://packagist.org/packages/smeghead/phel-saraudon
 
 ## Execute
 
+Output analysis results for the last 20 commits.
+
 ```bash
 $ git log --stat -n 20 | vendor/bin/saraudon -- src > output.html
 ```
 
-Run the `git log` command for another directory, parse the results and save the html content in `output.html`.
+Run the `git log` command which outputs the last 50 commit logs against the git repository in another directory, parse the results and save the html content in `output.html`.
 
 ```bash
 $ $(vendor/bin/saraudon-git-log /usr/target-project) -n 50 | vendor/bin/saraudon -- src > output.html
 ```
 
 `$(vendor/bin/saraudon-git-log /usr/target-project)`: `saraudon-git-log` generates a `git` command by specifying the target git directory. This can be followed by additional options for `git log`.
+
+Run the `git log` command to output the commit log for tags v0.14.0 through v0.15.0 for the git repository in another directory, parse the results and save the html content in `output.html`.
+
+```bash
+$ $(vendor/bin/saraudon-git-log /usr/target-project) v0.14.0..v0.15.0 | vendor/bin/saraudon -- src > output.html
+```
 
 ## Example
 
