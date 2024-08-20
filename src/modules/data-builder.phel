@@ -40,9 +40,7 @@
     (if (empty? nodes)
       acc
       (let [n (first nodes)
-            exists? (find |(if (empty? $)
-                             false
-                             (= ($ :path) (n :path))) acc)]
+            exists? (find |(= ($ :path) (n :path)) acc)]
         (recur (rest nodes) (if exists?
                               acc
                               (push acc n)))))))
@@ -72,20 +70,13 @@
       (and (= (a :source) (b :target))
            (= (a :target) (b :source)))))
 
-(defn- my-some? [pred xs]
-  (if (empty? xs)
-    false
-    (if (pred (first xs))
-      true
-      (recur pred (rest xs)))))
-
 (defn- generate-links [links]
   (loop [links links
          acc []]
     (if (empty? links)
       acc
       (let [t-link (first links)
-            exists? (my-some? |(same-link $ t-link) acc)]
+            exists? (some? |(same-link $ t-link) acc)]
         (if exists?
           (recur (rest links) acc)
           (let [count (count (filter |(same-link $ t-link) links))]

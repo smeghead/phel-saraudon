@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>saraudon</title>
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+<body>
+<style type="text/css">
+
+</style>
+<script type="text/javascript">
+    const width = 800;
+    const height = 800;
+    const colors = [
+        '#30123c', '#4043a7', '#4771e9', '#3d9bfe', '#23c4e2',
+        '#1ce5b6', '#47f784', '#87ff4e', '#b9f635', '#e1dd38',
+        '#f9ba38', '#fe8d27', '#f05b11', '#d73500', '#b01800',
+        //'#7a0100',
+    ];
+
+    const nodes = [{"id":0,"path":"src\/php\/Compiler\/Application\/Analyzer.php","label":"Analyzer.php","modify-lines":14,"commit-count":2},{"id":1,"path":"src\/php\/Api\/Infrastructure\/Command\/DocCommand.php","label":"DocCommand.php","modify-lines":117,"commit-count":6},{"id":2,"path":"src\/php\/Command\/Application\/CommandExceptionWriter.php","label":"CommandExceptionWriter.php","modify-lines":6,"commit-count":1},{"id":3,"path":"src\/php\/Command\/Application\/TextExceptionPrinter.php","label":"TextExceptionPrinter.php","modify-lines":8,"commit-count":1},{"id":4,"path":"src\/php\/Command\/CommandFacade.php","label":"CommandFacade.php","modify-lines":2,"commit-count":1},{"id":5,"path":"src\/php\/Command\/CommandFactory.php","label":"CommandFactory.php","modify-lines":24,"commit-count":3},{"id":6,"path":"src\/php\/Command\/Infrastructure\/ExceptionHandler.php","label":"ExceptionHandler.php","modify-lines":2,"commit-count":1},{"id":7,"path":"src\/php\/Run\/RunFactory.php","label":"RunFactory.php","modify-lines":2,"commit-count":1},{"id":8,"path":"src\/php\/Interop\/InteropFactory.php","label":"InteropFactory.php","modify-lines":4,"commit-count":1},{"id":9,"path":"src\/phel\/core.phel","label":"core.phel","modify-lines":2,"commit-count":1},{"id":10,"path":"src\/phel\/test.phel","label":"test.phel","modify-lines":2,"commit-count":1},{"id":11,"path":"src\/php\/Compiler\/CompilerFacade.php","label":"CompilerFacade.php","modify-lines":2,"commit-count":1},{"id":12,"path":"src\/php\/Compiler\/CompilerFacadeInterface.php","label":"CompilerFacadeInterface.php","modify-lines":2,"commit-count":1},{"id":13,"path":"src\/php\/Compiler\/CompilerFactory.php","label":"CompilerFactory.php","modify-lines":14,"commit-count":1},{"id":14,"path":"src\/php\/Build\/BuildFactory.php","label":"BuildFactory.php","modify-lines":10,"commit-count":1},{"id":15,"path":"src\/php\/Compiler\/Domain\/Analyzer\/Ast\/FnNode.php","label":"FnNode.php","modify-lines":12,"commit-count":1},{"id":16,"path":"src\/php\/Lang\/Collections\/Vector\/PersistentVector.php","label":"PersistentVector.php","modify-lines":7,"commit-count":2},{"id":17,"path":"src\/php\/Lang\/Collections\/Vector\/PersistentVectorInterface.php","label":"PersistentVectorInterface.php","modify-lines":3,"commit-count":1},{"id":18,"path":"src\/php\/Lang\/Collections\/Vector\/SubVector.php","label":"SubVector.php","modify-lines":5,"commit-count":1},{"id":19,"path":"src\/php\/Run\/Domain\/Repl\/MissingDependencyException.php","label":"MissingDependencyException.php","modify-lines":15,"commit-count":1},{"id":20,"path":"src\/php\/Run\/Domain\/Repl\/ReplCommandSystemIo.php","label":"ReplCommandSystemIo.php","modify-lines":5,"commit-count":1},{"id":21,"path":"src\/php\/Api\/ApiConfig.php","label":"ApiConfig.php","modify-lines":2,"commit-count":1}];
+    const links = [{"source":2,"target":3,"count":2},{"source":2,"target":4,"count":2},{"source":2,"target":5,"count":2},{"source":2,"target":6,"count":2},{"source":3,"target":4,"count":2},{"source":3,"target":5,"count":2},{"source":3,"target":6,"count":2},{"source":4,"target":5,"count":2},{"source":4,"target":6,"count":2},{"source":5,"target":6,"count":2},{"source":9,"target":10,"count":2},{"source":9,"target":5,"count":2},{"source":9,"target":11,"count":2},{"source":9,"target":12,"count":2},{"source":9,"target":13,"count":2},{"source":10,"target":5,"count":2},{"source":10,"target":11,"count":2},{"source":10,"target":12,"count":2},{"source":10,"target":13,"count":2},{"source":5,"target":11,"count":2},{"source":5,"target":12,"count":2},{"source":5,"target":13,"count":2},{"source":11,"target":12,"count":2},{"source":11,"target":13,"count":2},{"source":12,"target":13,"count":2},{"source":16,"target":17,"count":2},{"source":16,"target":18,"count":2},{"source":17,"target":18,"count":2},{"source":19,"target":20,"count":2}];
+
+
+    const maxCommitCount = nodes.map(n => n['commit-count']).reduce((a, b) => Math.max(a, b), 0);
+
+    const force = d3.layout.force()
+        .nodes(nodes)
+        .links(links)
+        .size([width, height])
+        .distance(300)
+        .friction(0.9)
+        .charge(-400)
+        .gravity(0.09)
+        .start();
+
+    const svg = d3.select("body")
+        .append("svg")
+        .attr({width:width, height:height});
+
+    const link = svg.selectAll("line")
+        .data(links)
+        .enter()
+        .append("line")
+        .attr({
+            'stroke-width': l => l.count / 2,
+        })
+        .style({stroke: "#999"});
+
+    const node = svg.selectAll("circle")
+        .data(nodes)
+        .enter()
+        .append("circle")
+        .attr({
+            r: n => n['modify-lines'] * 0.3 + 30,
+        })
+        .style({
+            fill: n => colors[Math.floor((colors.length - 1) * (n['commit-count'] / maxCommitCount))]
+        })
+        .call(force.drag);
+
+    const label = svg.selectAll('text')
+        .data(nodes)
+        .enter()
+        .append('text')
+        .attr({
+            "text-anchor":"middle",
+            "fill":"#333",
+            "font-weight": "bold",
+            "font-size": "15px",
+        })
+        .text(data => data.label);
+
+    force.on("tick", function() {
+        link.attr({
+            x1: data => data.source.x,
+            y1: data => data.source.y,
+            x2: data => data.target.x,
+            y2: data => data.target.y,
+        });
+        node.attr({
+            cx: data => data.x,
+            cy: data => data.y,
+        });
+        label.attr({
+            x: data => data.x,
+            y: data => data.y,
+        });
+    });
+
+</script>
+
+</body>
+

@@ -16,5 +16,5 @@
                  files))))
 
 (defn parse-commit [string target-path]
-  (let [lines (values (php/preg_split "/\r?\n/" string -1))] #(s/split-lines string)] https://github.com/phel-lang/phel-lang/pull/736
+  (let [lines (s/split-lines string)]
     (types/commit (get-hash lines) (get-files lines target-path))))

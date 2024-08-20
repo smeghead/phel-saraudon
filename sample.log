@@ -1,0 +1,100 @@
+commit 1be4cdd721bf61b747796f3f5d2b407cf10b4e72
+Author: smeghead <smeghead7@gmail.com>
+Date:   Thu Jul 18 23:16:55 2024 +0900
+
+    implement to output html document.
+
+ README.md                      |  4 +++
+ src/main.phel                  | 23 +++++++++++++++--
+ src/modules/commit-parser.phel |  3 ++-
+ src/modules/log-parser.phel    |  2 +-
+ src/template.html              | 57 +++++++++++-------------------------------
+ 5 files changed, 43 insertions(+), 46 deletions(-)
+
+commit dcc3477c16cb0c6990174dbaf9c25e95c1aafffd
+Author: smeghead <smeghead7@gmail.com>
+Date:   Wed Jul 17 23:06:49 2024 +0900
+
+    calculate modify-lies
+
+ src/modules/data-builder.phel        | 61 +++++++++++++++++++++++++++++-------
+ tests/modules/data-builder-test.phel |  5 ++-
+ 2 files changed, 54 insertions(+), 12 deletions(-)
+
+commit b42141d826d00d462e16a31353f991c464fa5575
+Author: smeghead <smeghead7@gmail.com>
+Date:   Tue Jul 16 23:40:43 2024 +0900
+
+    add log parser.
+
+ src/modules/log-parser.phel        | 18 ++++++++++++++++++
+ tests/modules/log-parser-test.phel | 34 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 52 insertions(+)
+
+commit d4fff39aa583e9bda443064be83dad2d948e716d
+Author: smeghead <smeghead7@gmail.com>
+Date:   Tue Jul 16 21:45:49 2024 +0900
+
+    change: link data format.
+
+ src/main.phel                        |   7 ++-
+ src/modules/data-builder.phel        |  35 ++++++++---
+ src/template.html                    | 116 +++++++++++++++++++++++++++++++++++
+ tests/modules/data-builder-test.phel |  35 ++++++++---
+ 4 files changed, 176 insertions(+), 17 deletions(-)
+
+commit 1c06ca8bc82c5f63e9130d4b2ad94d9acb6cbf0d
+Author: smeghead <smeghead7@gmail.com>
+Date:   Mon Jul 15 22:40:16 2024 +0900
+
+    add links test.
+
+ src/modules/data-builder.phel        | 35 ++++++++++++++++++++++++++++++++---
+ tests/modules/data-builder-test.phel |  4 ++++
+ 2 files changed, 36 insertions(+), 3 deletions(-)
+
+commit 4ed026427dd062503160a649349e6b6d55e6441b
+Author: smeghead <smeghead7@gmail.com>
+Date:   Mon Jul 15 18:33:18 2024 +0900
+
+    test: add data builder test.
+
+ docker-compose.yml                    | 11 ----------
+ src/modules/commit-parser.phel        |  2 +-
+ src/modules/data-builder.phel         | 38 +++++++++++++++++++++++++++++++++++
+ tests/modules/commit-parser-test.phel |  2 ++
+ tests/modules/data-builder-test.phel  | 17 ++++++++++++++++
+ 5 files changed, 58 insertions(+), 12 deletions(-)
+
+commit eba1037011217047e3ea74f6375d25224c2a8e8d
+Author: smeghead <smeghead7@gmail.com>
+Date:   Sun Jul 14 00:02:32 2024 +0900
+
+    first commit.
+
+ .github/PULL_REQUEST_TEMPLATE.md         |  7 +++++++
+ .github/workflows/ci.yml                 | 20 ++++++++++++++++++
+ .gitignore                               | 14 +++++++++++++
+ Dockerfile                               |  6 ++++++
+ README.md                                | 17 ++++++++++++++-
+ build/Dockerfile                         |  9 ++++++++
+ compose.yaml                             |  9 ++++++++
+ composer.json                            | 36 ++++++++++++++++++++++++++++++++
+ docker-compose.yml                       | 11 ++++++++++
+ example/using-exported-phel-function.php | 23 ++++++++++++++++++++
+ phel-config.php                          | 22 +++++++++++++++++++
+ src/main.phel                            |  5 +++++
+ src/modules/commit-parser.phel           | 19 +++++++++++++++++
+ src/modules/types.phel                   |  5 +++++
+ tests/modules/commit-parser-test.phel    | 28 +++++++++++++++++++++++++
+ 15 files changed, 230 insertions(+), 1 deletion(-)
+
+commit fe1ba854c6fd4983b07ffbdbee051bf2677156a6
+Author: smeghead <smeghead7@gmail.com>
+Date:   Sat Jul 13 21:37:04 2024 +0900
+
+    Initial commit
+
+ LICENSE   | 21 +++++++++++++++++++++
+ README.md |  2 ++
+ 2 files changed, 23 insertions(+)
