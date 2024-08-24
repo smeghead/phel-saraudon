@@ -13,37 +13,22 @@
 (defstruct data [nodes links])
 
 (defn- get-temprary-nodes [commits]
-  (loop [commits commits
-         acc []]
-    (if (empty? commits)
-       acc
-       (let [commit (first commits)]
-         (recur
-           (rest commits)
-           (concat acc (map
-                         |(temporary-node ($ :path) ($ :modify-lines))
-                         (commit :files))))))))
+  (reduce |(push $1 (temporary-node ($2 :path) ($2 :modify-lines)))
+          [] (reduce |(concat $1 ($2 :files)) [] commits)))
 
 (defn- search-temporary-nodes [t-nodes n]
-  (loop [t-nodes t-nodes
-         acc []]
-    (if (empty? t-nodes)
-      acc
-      (let [t-node (first t-nodes)]
-        (recur (rest t-nodes) (if (= (t-node :path) (n :path))
-                                (push acc t-node)
-                                acc))))))
+  (reduce |(if (= ($2 :path) (n :path))
+             (push $1 $2)
+             $1)
+          [] t-nodes))
 
 (defn- get-unique-temporary-nodes [t-nodes]
-  (loop [nodes t-nodes
-         acc []]
-    (if (empty? nodes)
-      acc
-      (let [n (first nodes)
-            exists? (find |(= ($ :path) (n :path)) acc)]
-        (recur (rest nodes) (if exists?
-                              acc
-                              (push acc n)))))))
+  (reduce (fn [acc n]
+            (let [exists? (find |(= ($ :path) (n :path)) acc)]
+              (if exists?
+                acc
+                (push acc n))))
+          [] t-nodes))
 
 (defn- get-nodes [commits]
   (let [t-nodes (get-temprary-nodes commits)
@@ -80,7 +65,6 @@
         (if exists?
           (recur (rest links) acc)
           (let [count (count (filter |(same-link $ t-link) links))]
-          #(let [count (count-links t-link links)]
             (recur (rest links) (push
                                   acc
                                   (link (t-link :source) (t-link :target) count)))))))))
